@@ -7,10 +7,12 @@ export class GraphView {
 
   leaf: WorkspaceLeaf;
   node: HTMLElement;
+  plugin: GraphBannerPlugin;
 
   setupLeafPromise: Promise<void>;
 
   public constructor(app: App, plugin: GraphBannerPlugin) {
+    this.plugin = plugin;
     this.leaf = app.workspace.getLeaf("tab");
     this.setupLeafPromise = this.setupLeaf(plugin.settings.timeToRemoveLeaf);
 
@@ -53,6 +55,16 @@ export class GraphView {
         abortController.abort();
       }, { signal: abortController.signal });
     });
+
+    this.applySettings();
+  }
+
+  applySettings() {
+    // Apply banner height from settings
+    this.node.style.setProperty(
+      "--banner-height",
+      `${this.plugin.settings.bannerHeight}px`,
+    );
   }
 
   isActive() {
@@ -66,14 +78,23 @@ export class GraphView {
   async placeTo(view: MarkdownView) {
     await this.setupLeafPromise;
 
+    const state: Record<string, unknown> = {
+      file: view.file!.path,
+    };
+
+    // Only pass graph depth if user explicitly set a value >= 0
+    if (this.plugin.settings.graphDepth >= 0) {
+      state.options = { localJumps: this.plugin.settings.graphDepth };
+    }
+
     await this.leaf.setViewState({
       type: "localgraph",
-      state: {
-        file: view.file!.path,
-      },
+      state,
     });
 
     this.leaf.setGroup(view.file!.path);
+
+    this.applySettings();
 
     const mode = view.getMode();
     const modeContainer = view.containerEl.find(`.markdown-${mode}-view`);

@@ -1,11 +1,11 @@
 {
-  "id": "graph-banner",
-  "name": "Graph Banner",
-  "version": "2.3.3",
+  "id": "graph-banner-enhanced",
+  "name": "Graph Banner Enhanced",
+  "version": "3.0.0",
   "minAppVersion": "1.7.2",
-  "description": "Display a local graph view to the note header",
-  "author": "ras0q",
-  "authorUrl": "https://github.com/ras0q",
+  "description": "Display a local graph view in the note header with configurable height and depth controls",
+  "author": "iPurpl3x",
+  "authorUrl": "https://github.com/iPurpl3x",
   "fundingUrl": "https://buymeacoffee.com/ras0q",
   "isDesktopOnly": false
 }

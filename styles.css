@@ -1,24 +1,25 @@
 /* https://github.com/mgmeyers/obsidian-style-settings */
 /* @settings
 
-name: Graph Banner
-id: graph-banner
+name: Graph Banner Enhanced
+id: graph-banner-enhanced
 settings:
   - id: banner-height
     title: Banner Height
-    description: The height of the banner. (e.g. 20vh, 200px)
+    description: The height of the banner. (e.g. 300px)
     type: variable-text
-    default: 20vh
+    default: 300px
 
 */
 
 :root {
+  --banner-height: 300px;
   --banner-margin-bottom: 16px;
 }
 
 .graph-banner-content {
   width: auto;
-  height: var(--banner-height, 20vh) !important;
+  height: var(--banner-height) !important;
   margin-block-end: var(--banner-margin-bottom);
   border: 2px solid transparent;
 
@@ -45,7 +46,7 @@ settings:
   :has(+ .graph-banner-content)
 ) {
   margin-block-end: calc(
-    var(--banner-height, 20vh) + var(--banner-margin-bottom)
+    var(--banner-height) + var(--banner-margin-bottom)
       + var(--inline-title-margin-bottom)
   );
 }

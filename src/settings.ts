@@ -4,11 +4,15 @@ import type GraphBannerPlugin from "./main.ts";
 export interface Settings {
   ignore: string[];
   timeToRemoveLeaf: number;
+  bannerHeight: number;
+  graphDepth: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   ignore: [],
   timeToRemoveLeaf: 100,
+  bannerHeight: 300,
+  graphDepth: -1,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -23,6 +27,43 @@ export class SettingTab extends PluginSettingTab {
     const { containerEl } = this;
 
     containerEl.empty();
+
+    new Setting(containerEl)
+      .setName("Banner height")
+      .setDesc(
+        "Height of the graph banner in pixels. Adjust to see more or less of the surrounding graph.",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(100, 600, 10)
+          .setValue(this.plugin.settings.bannerHeight)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.bannerHeight = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Graph depth")
+      .setDesc(
+        "How many hops/link-steps from the current note to show. Higher values reveal more of the surrounding graph.",
+      )
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOption("-1", "Default (Obsidian default)")
+          .addOption("1", "1 hop")
+          .addOption("2", "2 hops")
+          .addOption("3", "3 hops")
+          .addOption("5", "5 hops")
+          .setValue(String(this.plugin.settings.graphDepth))
+          .onChange(async (value) => {
+            this.plugin.settings.graphDepth = Number(value);
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
 
     new Setting(containerEl)
       .setName("Ignored path pattern")

@@ -49,6 +49,18 @@ export default class GraphBannerPlugin extends Plugin {
     this.graphViews = [];
   }
 
+  async updateAllGraphViews() {
+    for (const graphView of this.graphViews) {
+      graphView.applySettings();
+    }
+
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) return;
+
+    const graphView = this.findAvailableGraphView(view);
+    await graphView.placeTo(view);
+  }
+
   private async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
