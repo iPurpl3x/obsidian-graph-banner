@@ -53,6 +53,7 @@ export class SettingTab extends PluginSettingTab {
       .addDropdown((dropdown) =>
         dropdown
           .addOption("-1", "Default (Obsidian default)")
+          .addOption("0", "Current note only (0 hops)")
           .addOption("1", "1 hop")
           .addOption("2", "2 hops")
           .addOption("3", "3 hops")
