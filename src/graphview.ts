@@ -65,6 +65,56 @@ export class GraphView {
       "--banner-height",
       `${this.plugin.settings.bannerHeight}px`,
     );
+
+    // Try to push graph settings to the leaf's internal view
+    this.applyGraphSettings();
+  }
+
+  private async applyGraphSettings() {
+    await this.setupLeafPromise;
+
+    const view = this.leaf.view as any;
+    if (!view) return;
+
+    const s = this.plugin.settings;
+
+    // Build the settings object matching Obsidian's graph.json format
+    const config = {
+      nodeSizeMultiplier: s.nodeSize,
+      scale: s.graphScale,
+      lineSizeMultiplier: s.lineSize,
+      linkDistance: s.linkDistance,
+      repelStrength: s.repelStrength,
+      centerStrength: s.centerStrength,
+    };
+
+    // Strategy 1: pass via setViewState state object (full reload)
+    if (view.getState) {
+      const state = view.getState() || {};
+      Object.assign(state, config);
+      view.setState(state);
+    }
+
+    // Strategy 2: set on view directly
+    Object.assign(view, config);
+
+    // Strategy 3: look for renderer/graph/data props on view
+    for (const key of Object.keys(view)) {
+      const val = view[key];
+      if (val && typeof val === "object" && !Array.isArray(val)) {
+        Object.assign(val, config);
+      }
+    }
+
+    // Strategy 4: try re-setting the view state entirely
+    if (view.getState) {
+      const currentState = view.getState() || {};
+      // Ensure 'file' is preserved
+      this.leaf.setViewState({
+        type: "localgraph",
+        state: { ...currentState, ...config },
+      });
+    }
   }
 
   isActive() {
@@ -78,19 +128,21 @@ export class GraphView {
   async placeTo(view: MarkdownView) {
     await this.setupLeafPromise;
 
+    const s = this.plugin.settings;
+
     const state: Record<string, unknown> = {
       file: view.file!.path,
-      nodeSizeMultiplier: this.plugin.settings.nodeSize,
-      scale: this.plugin.settings.graphScale,
-      lineSizeMultiplier: this.plugin.settings.lineSize,
-      linkDistance: this.plugin.settings.linkDistance,
-      repelStrength: this.plugin.settings.repelStrength,
-      centerStrength: this.plugin.settings.centerStrength,
+      nodeSizeMultiplier: s.nodeSize,
+      scale: s.graphScale,
+      lineSizeMultiplier: s.lineSize,
+      linkDistance: s.linkDistance,
+      repelStrength: s.repelStrength,
+      centerStrength: s.centerStrength,
     };
 
     // Only pass graph depth if user explicitly set a value >= 0
-    if (this.plugin.settings.graphDepth >= 0) {
-      state.options = { localJumps: this.plugin.settings.graphDepth };
+    if (s.graphDepth >= 0) {
+      state.options = { localJumps: s.graphDepth };
     }
 
     await this.leaf.setViewState({
