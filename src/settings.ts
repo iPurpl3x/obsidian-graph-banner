@@ -9,6 +9,9 @@ export interface Settings {
   nodeSize: number;
   graphScale: number;
   lineSize: number;
+  linkDistance: number;
+  repelStrength: number;
+  centerStrength: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +22,9 @@ export const DEFAULT_SETTINGS: Settings = {
   nodeSize: 1,
   graphScale: 1,
   lineSize: 1,
+  linkDistance: 150,
+  repelStrength: 5,
+  centerStrength: 0.5,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -118,6 +124,57 @@ export class SettingTab extends PluginSettingTab {
           .setDynamicTooltip()
           .onChange(async (value) => {
             this.plugin.settings.lineSize = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Link distance")
+      .setDesc(
+        "Target distance between connected nodes. Lower = tighter graph with less wasted space. (50 – 500)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(50, 500, 10)
+          .setValue(this.plugin.settings.linkDistance)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.linkDistance = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Repulsion strength")
+      .setDesc(
+        "How strongly nodes push apart. Lower = tighter clusters. (1 – 30)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(1, 30, 1)
+          .setValue(this.plugin.settings.repelStrength)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.repelStrength = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Center gravity")
+      .setDesc(
+        "How strongly nodes are pulled to center. Higher = more compact layout. (0.1 – 1.0)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(0.1, 1.0, 0.05)
+          .setValue(this.plugin.settings.centerStrength)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.centerStrength = value;
             await this.plugin.saveData(this.plugin.settings);
             this.plugin.updateAllGraphViews();
           })

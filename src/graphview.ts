@@ -83,6 +83,9 @@ export class GraphView {
       nodeSizeMultiplier: this.plugin.settings.nodeSize,
       scale: this.plugin.settings.graphScale,
       lineSizeMultiplier: this.plugin.settings.lineSize,
+      linkDistance: this.plugin.settings.linkDistance,
+      repelStrength: this.plugin.settings.repelStrength,
+      centerStrength: this.plugin.settings.centerStrength,
     };
 
     // Only pass graph depth if user explicitly set a value >= 0
