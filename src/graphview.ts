@@ -80,6 +80,9 @@ export class GraphView {
 
     const state: Record<string, unknown> = {
       file: view.file!.path,
+      nodeSizeMultiplier: this.plugin.settings.nodeSize,
+      scale: this.plugin.settings.graphScale,
+      lineSizeMultiplier: this.plugin.settings.lineSize,
     };
 
     // Only pass graph depth if user explicitly set a value >= 0

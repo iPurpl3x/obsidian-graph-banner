@@ -6,6 +6,9 @@ export interface Settings {
   timeToRemoveLeaf: number;
   bannerHeight: number;
   graphDepth: number;
+  nodeSize: number;
+  graphScale: number;
+  lineSize: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -13,6 +16,9 @@ export const DEFAULT_SETTINGS: Settings = {
   timeToRemoveLeaf: 100,
   bannerHeight: 300,
   graphDepth: -1,
+  nodeSize: 1,
+  graphScale: 1,
+  lineSize: 1,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -61,6 +67,57 @@ export class SettingTab extends PluginSettingTab {
           .setValue(String(this.plugin.settings.graphDepth))
           .onChange(async (value) => {
             this.plugin.settings.graphDepth = Number(value);
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Node size")
+      .setDesc(
+        "Scale factor for graph nodes and labels. Larger values make text more readable. (0.5 – 2.0)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(0.5, 2.0, 0.1)
+          .setValue(this.plugin.settings.nodeSize)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.nodeSize = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Graph scale (zoom)")
+      .setDesc(
+        "Initial zoom level of the graph. Zoom out (<1) to see more nodes, zoom in (>1) for close-up. (0.5 – 2.0)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(0.5, 2.0, 0.1)
+          .setValue(this.plugin.settings.graphScale)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.graphScale = value;
+            await this.plugin.saveData(this.plugin.settings);
+            this.plugin.updateAllGraphViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Edge thickness")
+      .setDesc(
+        "Scale factor for graph edges/lines. (0.5 – 2.0)",
+      )
+      .addSlider((slider) =>
+        slider
+          .setLimits(0.5, 2.0, 0.1)
+          .setValue(this.plugin.settings.lineSize)
+          .setDynamicTooltip()
+          .onChange(async (value) => {
+            this.plugin.settings.lineSize = value;
             await this.plugin.saveData(this.plugin.settings);
             this.plugin.updateAllGraphViews();
           })
